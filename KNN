@@ -1,0 +1,106 @@
+KNN
+# K- Nearest Neighbour.
+
+# Packages
+library(class) # Contains the K-NN algorithm
+library(descr) # For the cross table
+
+# See a summary of the dataset and set the seed.
+summary(heart)
+set.seed(123)
+head(heart)
+
+# Generate a random number that is 80% of the total number of rows in the dataset.
+ran <- sample(1:nrow(heart), 0.8 * nrow(heart))
+
+# Normalises the data (Function Created).
+nor <- function(x) {(x -min(x))/(max(x)-min(x))}
+
+# Runs normalisation on the first 13 columns of the dataset because they are the predictors.
+heart_norm <- as.data.frame(lapply(heart[,c(1,2,3,4.5,6,7,8,9,10,11,12,13)], nor))
+
+# See a summary of the dataset now.
+summary(heart_norm)
+
+# Create the training set.
+heart_train <- heart_norm[ran,]
+
+# Create the testing set.
+heart_test <- heart_norm[-ran,]
+
+# Extract the 14th column of the train dataset because it will be used as the 'cl' argument in the knn function.
+# The 14th column is the target column.
+heart_target_category <- heart[ran,14]
+
+# Extract 14th column of the test dataset to measure the accuracy.
+heart_test_category <- heart[-ran,14]
+
+# Run the knn function with k set as 13.
+pr <- knn(heart_train, heart_test, cl=heart_target_category, k=13)
+
+# Create confusion matrix for knn function.
+t <- table(pr,heart_test_category)
+
+# Evaluate the performance in a cross table.
+CrossTable(x=heart_test_category, y=pr, prop.chisq=FALSE)
+
+# Divide the correct predictions by the total number of predictions
+# to tell us how accurate the model is.
+# Accuracy = (TP + FN) / (TP + TN + FN + FP)
+accuracy <- (97 + 83)/(97+12+83+13)
+accuracy
+# Accuracy of model: 0.8780488 ~ 88%
+
+# Precision
+# Precision = TP/TP + FP
+model_precision = round((97)/(97 + 13), digits = 2)
+print(paste("Model Precision for KNN (test dataset) is: ", model_precision))
+# "Model Precision for KNN (test dataset) is:  0.88"
+
+# Recall
+# Recall = TP/TP + FN
+model_recall = round((97)/(97 + 83), digits = 2)
+print(paste("Model Recall for KNN (test dataset) is: ", model_recall))
+# "Model Recall for KNN (test dataset) is:  0.54"
+
+# Changed K Value to 12 for Best Accuracy.
+# Run the knn function with k set as 12.
+pr_2 <- knn(heart_train, heart_test, cl=heart_target_category, k=12)
+
+# Create confusion matrix for knn function.
+t_2 <- table(pr_2, heart_test_category)
+
+# Evaluate the performance in a cross table.
+CrossTable(x=heart_test_category, y=pr_2, prop.chisq=FALSE)
+
+# Divide the correct predictions by the total number of predictions to tell
+# us how accurate the model is.
+# Accuracy = (TP + FN) / (TP + TN + FN + FP)
+accuracy_2 <- (96 + 84)/(96+11+84+14)
+accuracy_2
+# Accuracy of model: 0.8780488 ~ 88%
+
+# Precision
+# Precision = TP/TP + FP
+model_precision_2 = round((96)/(96 + 14), digits = 2)
+print(paste("Model Precision for KNN (test dataset) is: ", model_precision_2))
+# "Model Precision for KNN (test dataset) is:  0.87"
+
+# Recall
+# Recall = TP/TP + FN
+model_recall_2 = round((96)/(96 + 84), digits = 2)
+print(paste("Model Recall for KNN (test dataset) is: ", model_recall_2))
+# "Model Recall for KNN (test dataset) is:  0.53"
+
+# Changing the value of k:
+# Accuracy of model when k = 4 : 0.7902439 ~ 79%
+# Accuracy of model when k = 5 : 0.804878 ~ 80%
+# Accuracy of model when k = 6 : 0.8390244 ~ 84%
+# Accuracy of model when k = 7 : 0.8341463 ~ 83.4%
+# Accuracy of model when k = 8 : 0.8682927 ~ 87%
+# Accuracy of model when k = 9 : 0.8682927 ~ 87%
+# Accuracy of model when k = 10 : 0.8731707 ~ 87%
+# Accuracy of model when k = 11 : 0.8634146 ~ 86%
+# Accuracy of model when k = 12 : 0.8780488 ~ 88%
+# Accuracy of model when k = 13 : 0.8780488 ~ 88%
+# Accuracy of model when k = 14 : 0.8634146 ~ 86%
